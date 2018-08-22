@@ -50,7 +50,7 @@ if(objConfig.appenders){
 }
 
 // 目录创建完毕，才加载配置，不然会出异常
-log4js.configure(objConfig);
+//log4js.configure(objConfig);
 
 var logDebug = log4js.getLogger('logDebug');
 var logInfo = log4js.getLogger('logInfo');
