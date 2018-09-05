@@ -24,7 +24,7 @@ goods.edit = {
     init: function () {
         goods.edit._curGroupId = common.QueryString('goodsGroupId');
         goods.addAndEdit.skus._skusShow();
-        goods.edit.getCategoryInfo();
+        //goods.edit.getCategoryInfo();
         //保存
         $("#btnConfirm_edit").on('click', function () {
             goods.edit.saveInfo();
@@ -47,35 +47,35 @@ goods.edit = {
     /**
      * 获取商品分类信息
      */
-    getCategoryInfo: function () {
-        var url = '/goods/category';
-        common.ajax(url, "", goods.edit._getCategorySuc, goods.edit._error);
-    },
+    //getCategoryInfo: function () {
+    //    var url = '/goods/category';
+    //    common.ajax(url, "", goods.edit._getCategorySuc, goods.edit._error);
+    //},
     /**
      * 获取商品分类成功回调
      * @param data
      * @private
      */
-    _getCategorySuc: function (data) {
-        if (data.code == 200) {
-            var categoryArr = data.data;
-            var curId = $("#categorySelect").attr('curId');
-            var arr_html = [];
-            for (var i = 0; i < categoryArr.length; i++) {
-                if (categoryArr[i].Id == 'd37c79275b404124b01efa2ac840b345') {
-                    arr_html.push('<option disabled="disabled">-----' + categoryArr[i].categoryName + '-----</option>');
-                } else if (categoryArr[i].Id == curId) {
-                    arr_html.push('<option class="categoryOption" selected="selected"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
-                } else {
-                    arr_html.push('<option class="categoryOption"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
-                }
-            }
-            $("#categorySelect").html(arr_html.join(''));
-        }
-    },
-    _error: function () {
-        layer.alert('服务异常');
-    },
+//    _getCategorySuc: function (data) {
+//        if (data.code == 200) {
+//            var categoryArr = data.data;
+//            var curId = $("#categorySelect").attr('curId');
+//            var arr_html = [];
+//            for (var i = 0; i < categoryArr.length; i++) {
+//                if (categoryArr[i].Id == 'd37c79275b404124b01efa2ac840b345') {
+//                    arr_html.push('<option disabled="disabled">-----' + categoryArr[i].categoryName + '-----</option>');
+//                } else if (categoryArr[i].Id == curId) {
+//                    arr_html.push('<option class="categoryOption" selected="selected"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
+//                } else {
+//                    arr_html.push('<option class="categoryOption"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
+//                }
+//            }
+//            $("#categorySelect").html(arr_html.join(''));
+//        }
+//    },
+//    _error: function () {
+//        layer.alert('服务异常1');
+//    },
 
     /**
      * 初始化标签信息
@@ -91,7 +91,7 @@ goods.edit = {
                 goods.addAndEdit._labelsdb({label: chooseLabels[j]}).update({checked: true});
             }
         } catch (e) {
-            layer.alert('数据异常');
+            layer.alert('数据异常2');
         }
     },
 
@@ -171,7 +171,7 @@ goods.add = {
 
     //初始化
     init: function () {
-        goods.add.getCategoryInfo();
+        //goods.add.getCategoryInfo();
         //goods.add.getBrandInfo();
 
         $("#btnConfirm").on('click', function () {
@@ -200,37 +200,37 @@ goods.add = {
     /**
      * 获取商品分类信息
      */
-    getCategoryInfo: function () {
-        var url = '/goods/category';
-        common.ajax(url, "", goods.add._getCategorySuc, goods.add._error);
-    },
+    //getCategoryInfo: function () {
+    //    var url = '/goods/category';
+    //    common.ajax(url, "", goods.add._getCategorySuc, goods.add._error);
+    //},
     /**
      * 获取商品分类成功回调
      * @param data
      * @private
      */
-    _getCategorySuc: function (data) {
-        if (data.code == 200) {
-            var categoryArr = data.data;
-            //默认选中上衣
-            var curId = 'd37c79275b404124b01efa2ac840b345';
-            var arr_html = [];
-            for (var i = 0; i < categoryArr.length; i++) {
-                if (categoryArr[i].Id == 'd37c79275b404124b01efa2ac840b345') {
-                    arr_html.push('<option disabled="disabled">-----' + categoryArr[i].categoryName + '-----</option>');
-                } else if (categoryArr[i].Id == curId) {
-                    arr_html.push('<option class="categoryOption" selected="selected"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
-                } else {
-                    arr_html.push('<option class="categoryOption"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
-                }
-            }
-            $("#categorySelect").html(arr_html.join(''));
-        }
-    },
-    _error: function () {
-        layer.alert('服务异常');
-    },
-
+//    _getCategorySuc: function (data) {
+//        if (data.code == 200) {
+//            var categoryArr = data.data;
+//            //默认选中上衣
+//            var curId = 'd37c79275b404124b01efa2ac840b345';
+//            var arr_html = [];
+//            for (var i = 0; i < categoryArr.length; i++) {
+//                if (categoryArr[i].Id == 'd37c79275b404124b01efa2ac840b345') {
+//                    arr_html.push('<option disabled="disabled">-----' + categoryArr[i].categoryName + '-----</option>');
+//                } else if (categoryArr[i].Id == curId) {
+//                    arr_html.push('<option class="categoryOption" selected="selected"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
+//                } else {
+//                    arr_html.push('<option class="categoryOption"  value="' + categoryArr[i].Id + '">' + categoryArr[i].categoryName + '</option>');
+//                }
+//            }
+//            $("#categorySelect").html(arr_html.join(''));
+//        }
+//    },
+//    _error: function () {
+//        layer.alert('服务异常3');
+//    },
+//
     /**
      * 保存提交
      */
@@ -393,7 +393,7 @@ goods.addAndEdit = {
 
     },
     _error: function () {
-        layer.alert('服务异常');
+        layer.alert('服务异常4');
     },
     /**
      * 检测outeriid 是否重复

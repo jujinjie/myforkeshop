@@ -10,7 +10,7 @@ var common = require('../common');
  * @param res
  */
 function login(req, res) {
-    mysqlConn.query('select * from bbx_account where AccountName=? and AccountPass=? limit 1', [req.body.username, req.body.password],
+    mysqlConn.query('select * from account where AccountName=? and AccountPass=? limit 1', [req.body.username, req.body.password],
         function (err, result) {
             if (utils.isError(err)) {
                 return utils.jsonFail(res);

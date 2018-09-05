@@ -19,7 +19,7 @@ function list(req,res){
                         Role,
                         AccountState `;
             var fromSQL = ` FROM
-                        bbx_account
+                        account
                     WHERE
                         Role LIKE '%管理员' `;
             var limitSQL =` LIMIT ?,? `;
@@ -70,14 +70,14 @@ function  add(req,res){
                 throw '两次输入密码不一致或为空';
             }
 
-            var checkSQL = `SELECT COUNT(1) AS cnt FROM bbx_account WHERE AccountName = ? ;`;
+            var checkSQL = `SELECT COUNT(1) AS cnt FROM account WHERE AccountName = ? ;`;
             var check_result = mysql_db.query.sync(mysql_db,checkSQL,[userName])[0][0].cnt;
             console.log(check_result);
             if(check_result>0){
                 throw '管理员用户已存在';
             }
 
-            var addSQL=`INSERT INTO bbx_account (AccountName,AccountPass,CreateTime,Role,AccountState)  VALUES (?,?,?,?,?) ;`;
+            var addSQL=`INSERT INTO account (AccountName,AccountPass,CreateTime,Role,AccountState)  VALUES (?,?,?,?,?) ;`;
             var param=[
                 userName,
                 inParam.newPass,
@@ -131,13 +131,13 @@ function  del(req,res){
                 throw '用户不可以删除自己的账户';
             }
 
-            var checkSQL = `SELECT * FROM bbx_account WHERE Id = ? ;`;
+            var checkSQL = `SELECT * FROM account WHERE Id = ? ;`;
             var check_result = mysql_db.query.sync(mysql_db,checkSQL,[id])[0];
             if(check_result.length==0){
                 throw '管理员用户不存在';
             }
 
-            var delSQL=`DELETE FROM bbx_account WHERE Id= ? ;`;
+            var delSQL=`DELETE FROM account WHERE Id= ? ;`;
             var param=[
                 id
             ];
@@ -167,7 +167,7 @@ function cpwdView(req, res) {
     var userId = req.query.id, user;
     if (userId) {
         mysql_db.query(
-            'select AccountName from bbx_account where Id=? limit 1',
+            'select AccountName from account where Id=? limit 1',
             [userId], function (err, result) {
                 user = result[0];
                 if (user) {
@@ -199,7 +199,7 @@ function changePwd(req, res) {
                     return;
                 }
 
-                var sql = 'select count(1) as ct from bbx_account where Id=? and AccountPass=? and AccountName=?';
+                var sql = 'select count(1) as ct from account where Id=? and AccountPass=? and AccountName=?';
                 var ct = mysql_db.query.sync(mysql_db, sql, [userId, oldPass, username])[0][0].ct;
 
                 if (ct == 0) {
@@ -207,7 +207,7 @@ function changePwd(req, res) {
                     return;
                 }
 
-                var sql2 = 'UPDATE bbx_account SET AccountPass=? WHERE Id=? and AccountName=?';
+                var sql2 = 'UPDATE account SET AccountPass=? WHERE Id=? and AccountName=?';
                 mysql_db.query.sync(mysql_db, sql2, [newPass, userId, username]);
 
                 res.json({code: 200, msg: "提交成功"});

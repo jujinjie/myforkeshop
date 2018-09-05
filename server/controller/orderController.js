@@ -259,7 +259,7 @@ function outTimeOutOrders(req,res){
             "WHERE bbo.CreateTime BETWEEN DATE(?) AND DATE(?) " +
             "AND be4o.CreateTime IS NOT NULL ) ot " +
             "LEFT JOIN bbx_goods4orders bg4o ON bg4o.orderId = ot.D " +
-            "left JOIN bbx_account ba ON ba.Id = ot.E " +
+            "left JOIN account ba ON ba.Id = ot.E " +
             "HAVING DiffDate > 48 ";
             var result = mysql_db.query.sync(mysql_db, sql,[sTime,eTime])[0];
             var conf = {};
@@ -340,7 +340,7 @@ function outNoExpressOrder (req,res){
             "WHERE bbo.CreateTime BETWEEN DATE(?) AND DATE(?) " +
             "AND ISNULL(be4o.CreateTime) )ot " +
             "LEFT JOIN bbx_goods4orders bg4o ON bg4o.orderId = ot.D " +
-            "left JOIN bbx_account ba ON ba.Id = ot.E";
+            "left JOIN account ba ON ba.Id = ot.E";
 
             var result = mysql_db.query.sync(mysql_db, sql,[sTime,eTime])[0];
 
@@ -469,14 +469,14 @@ function outCheck09All(req,res){
             var selectSql = "SELECT a.OrderCode,c.AccountName,a.OrderProgressInfo,b.GoodsTitle,b.GoodsNum,b.GoodsSupplyPrice FROM (  " +
                 "SELECT Id,OrderCode,OrderProgressInfo,MerchantId FROM bbx_orders WHERE Date(HasChecked) = ? " +
                 " ) a LEFT JOIN bbx_goods4orders b ON b.OrderId = a.Id " +
-                "LEFT JOIN bbx_account c ON a.MerchantId = c.Id ORDER BY c.AccountName";
+                "LEFT JOIN account c ON a.MerchantId = c.Id ORDER BY c.AccountName";
 
             //var selectSql = "SELECT bba.AccountName,bbo.OrderCode,bbe4o.ExpressName,bbe4o.ExpressCode,bbo.createTime,bbo.OrderProgressInfo,bbo.GoodsTotalPrice FROM " +
             //    "(SELECT Id,OrderCode,createTime,GoodsTotalPrice,MerchantId,OrderProgressInfo FROM bbx_orders " +
             //    "WHERE OrderProgressState = 9 " +
             //    "AND Date(HasChecked) = ? " +
             //    " ) bbo " +
-            //    "LEFT JOIN bbx_account bba ON bbo.MerchantId = bba.Id " +
+            //    "LEFT JOIN account bba ON bbo.MerchantId = bba.Id " +
             //    "LEFT JOIN bbx_express4orders bbe4o ON bbo.Id = bbe4o.OrderId " +
             //    "ORDER BY bba.AccountName DESC";
 
@@ -530,14 +530,14 @@ function outCheck19All(req,res){
             var selectSql = "SELECT f.OrderCode,f.AccountName,DeductExpressFee,MoreMoney,RefundReason,GoodsTitle,f.goodsNum AS gn1,d.goodsNum AS gn2,d.GoodsSupplyPrice FROM ( " +
                 "SELECT a.OrderCode,a.AccountName,DeductExpressFee,MoreMoney,b.RefundReason,c.GoodsId,c.goodsNum FROM ( " +
                 "SELECT RefundId,OrderCode,AccountName,DeductExpressFee,MoreMoney FROM bbx_balance4orders " +
-                "LEFT JOIN bbx_account ON bbx_balance4orders.MerchantId = bbx_account.Id WHERE DATE(CheckTime) = ?  " +
+                "LEFT JOIN account ON bbx_balance4orders.MerchantId = account.Id WHERE DATE(CheckTime) = ?  " +
                 ")a LEFT JOIN bbx_refund b ON a.RefundId = b.Id LEFT JOIN bbx_refund4orders c ON a.OrderCode = c.OrderCode " +
                 ")f LEFT JOIN bbx_view_order_with_goods_consignee_list_all d ON f.OrderCode = d.OrderCode AND f.GoodsId = d.goodsActionId ORDER BY OrderCode"
 
             //var selectSql = "SELECT b.GoodsTotalPrice,a.DeductGoodsPrice,a.OrderCode,a.DeductExpressFee,a.ExpressCode,a.ExpressCompany,a.RefundReason,a.AccountName,a.MoreMoney  FROM (" +
             //    "SELECT b4o.OrderCode,b4o.DeductGoodsPrice,b4o.DeductExpressFee,b4o.ExpressCode,b4o.ExpressCompany,br.RefundReason,bba.AccountName,b4o.MoreMoney " +
             //    "FROM bbx_balance4orders b4o LEFT JOIN bbx_refund br ON b4o.RefundId = br.Id " +
-            //    "LEFT JOIN bbx_account bba ON b4o.MerchantId = bba.Id " +
+            //    "LEFT JOIN account bba ON b4o.MerchantId = bba.Id " +
             //    "WHERE Date(CheckTime) = ? ORDER BY bba.AccountName DESC) a " +
             //    "LEFT JOIN ( " +
             //    "SELECT SUM((GoodsNum * GoodsSupplyPrice)) AS GoodsTotalPrice, OrderCode FROM bbx_refund4orders " +
@@ -595,7 +595,7 @@ function outCheckPunish(req,res){
             //导出已标记的售后订单
 
             var selectSql = "SELECT AccountName,MerchantId,PunishmentPrice,PunishTime,PunishmentType,OrderCode " +
-                "FROM bbx_merchant4punishment a LEFT JOIN bbx_account b on b.Id = a.MerchantId " +
+                "FROM bbx_merchant4punishment a LEFT JOIN account b on b.Id = a.MerchantId " +
                 "WHERE DATE(CheckTime) = ? ORDER BY MerchantId"
 
             var result = mysql_db.query.sync(mysql_db, selectSql,[cTime])[0];
@@ -808,7 +808,7 @@ function exportOrderDetailMerchant(req, res) {
     sql.push("a.AccountName,vogc.OrderCode,bvgl.BrandTitle,vogc.OrderTime,vogc.GoodsTitle,vogc.GoodsNum,vogc.GoodsFilterConfig,vogc.GoodsSupplyPrice,vogc.OrderTotalPrice,vogc.ConsigneeName,vogc.ConsigneeMobile,vogc.ConsigneeAddress,vogc.Remarks,vogc.CreateTime,vogc.OrderProgressInfo,vogc.Outeriid,vogc.Skuid");
     sql.push("FROM bbx_view_order_with_goods_consignee_list_all vogc");
     sql.push("left join bbx_view_goods_list bvgl ON vogc.GoodsActionId = bvgl.GoodsId");
-    sql.push("LEFT JOIN bbx_account a ON a.Id = vogc.MerchantId");
+    sql.push("LEFT JOIN account a ON a.Id = vogc.MerchantId");
     sql.push("WHERE 1 = 1");
     sql.push("AND vogc.MerchantId = " + req.cookies.user.Id);
     sql.push(order_statas_sql);

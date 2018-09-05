@@ -20,10 +20,10 @@ router.get('/goods/mgr', function (req, res) {
 });
 
 //商品类别页面
-router.get('/goods/category', function (req, res) {
-    res.render('goods/goods_category', req.session.user);
-});
-
+//router.get('/goods/category', function (req, res) {
+//    res.render('goods/goods_category', req.session.user);
+//});
+//
 //查询所有商品组接口
 router.post('/goodsgroup/list', function (req, res) {
     goodsController.getGoodsGroups(req, res);
@@ -65,10 +65,10 @@ router.post('/goodsgroup/delete/', function (req, res) {
 });
 
 //查询商品分类接口
-router.post('/goods/category', function (req, res) {
-    goodsController.getGoodsCategory(req, res);
-});
-
+//router.post('/goods/category', function (req, res) {
+//    goodsController.getGoodsCategory(req, res);
+//});
+//
 //检查商品编码是否重复
 router.post('/goods/checkOuteriid', function (req, res) {
     goodsController.checkOuteriid(req, res);

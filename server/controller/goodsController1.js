@@ -13,37 +13,37 @@ var taffy = require('../lib/taffy-min');
  * @param req
  * @param res
  */
-//function getGoodsCategory(req, res) {
-//
-//    Sync(function () {
-//        try {
-//            var sql;
-//            sql = 'SELECT * from bbx_goodscategory  where CategoryTree like "%1800%" ORDER BY CategorySort ASC';
-//            var result = mysql_db.query.sync(mysql_db, sql)[0];
-//            var list = [], temp;
-//            for (var i = 0; i < result.length; i++) {
-//                temp = result[i];
-//                if (i != 0) {
-//                    list.push({
-//                        Id: temp.Id,
-//                        categoryName: temp.CategoryTitle,
-//                        parentId: temp.CategoryPid
-//                    });
-//                } else {
-//                    list.push({
-//                        Id: temp.Id,
-//                        categoryName: temp.CategoryTitle
-//                    });
-//                }
-//
-//            }
-//            res.json({"code": 200, "data": list});
-//        } catch (e) {
-//            console.log(e);
-//            res.json({"code": 300, "data": "error"});
-//        }
-//    });
-//}
+function getGoodsCategory(req, res) {
+
+    Sync(function () {
+        try {
+            var sql;
+            sql = 'SELECT * from bbx_goodscategory  where CategoryTree like "%1800%" ORDER BY CategorySort ASC';
+            var result = mysql_db.query.sync(mysql_db, sql)[0];
+            var list = [], temp;
+            for (var i = 0; i < result.length; i++) {
+                temp = result[i];
+                if (i != 0) {
+                    list.push({
+                        Id: temp.Id,
+                        categoryName: temp.CategoryTitle,
+                        parentId: temp.CategoryPid
+                    });
+                } else {
+                    list.push({
+                        Id: temp.Id,
+                        categoryName: temp.CategoryTitle
+                    });
+                }
+
+            }
+            res.json({"code": 200, "data": list});
+        } catch (e) {
+            console.log(e);
+            res.json({"code": 300, "data": "error"});
+        }
+    });
+}
 
 /**
  * 获取商品组列表信息
@@ -61,25 +61,25 @@ function getGoodsGroups(req, res) {
 
 
             if (req.body.queryKeyStr) {
-                where = where + ' and (commodity_name like "%' + req.body.queryKeyStr + '%") ';
+                where = where + ' and (GoodsGroupTitle like "%' + req.body.queryKeyStr + '%" or Outeriid like "%' + req.body.queryKeyStr + '%") ';
             }
             if (req.body.saleState && req.body.saleState != '-1') {
                 switch (req.body.saleState) {
                     case '0':
-                        where += ' and group_status=0 ';
+                        where += ' and GoodsSaleState=0 ';
                         break;
                     case '1':
-                        where += ' and group_status=1 ';
+                        where += ' and GoodsSaleState=1 ';
                         break;
                 }
             }
 
-            sql = 'SELECT commodityid,commodity_name,group_status, imgpath,expiration_date,CreateTime ' +
-                ' FROM  commodity  '
-                + where + '  ORDER BY CreateTime desc limit ' + skipNum + ',' + pageSize;
+            sql = 'SELECT Id,GoodsGroupTitle,GoodsSaleState,GoodsImgPath,State,CreateTime ' +
+                ' FROM  bbx_view_goodsgroup_list A  '
+                + where + '  ORDER BY UpdateTime desc limit ' + skipNum + ',' + pageSize;
             var result = mysql_db.query.sync(mysql_db, sql)[0];
 
-            var sql2 = 'SELECT  count(1) AS count FROM  commodity ' + where;
+            var sql2 = 'SELECT  count(1) AS count FROM  bbx_view_goodsgroup_list A ' + where;
             var result2 = mysql_db.query.sync(mysql_db, sql2)[0];
 
             var list = [], temp;
@@ -88,15 +88,15 @@ function getGoodsGroups(req, res) {
                 temp = result[i];
 
                 list.push({
-                    Id: temp.commodityid,
+                    Id: temp.Id,
                     ActionId: temp.ActionId,
                     ActionTitle: temp.ActionTitle,
-                    goodsGroupTitle: temp.commodity_name,
-                    GoodsSaleState: temp.group_status,
+                    goodsGroupTitle: temp.GoodsGroupTitle,
+                    GoodsSaleState: temp.GoodsSaleState,
                     //上架状态 0 未上架  1 已上架 2 已下架
-                    addedState: temp.expiration_date,
+                    addedState: temp.GoodsSaleState,
                     createTime: temp.CreateTime,
-                    imgPaths: typeof (temp.imgpath) == 'object' ? temp.imgpath : [temp.imgpath || img],
+                    imgPaths: typeof (temp.GoodsImgPath) == 'object' ? temp.GoodsImgPath : [temp.GoodsImgPath || img],
                     brand: {
                         BrandTitle: temp.BrandTitle,
                         BrandState: temp.BrandState
@@ -206,10 +206,10 @@ function getGoodsGroupInfo(req, res) {
                     colors: colorArr,
                     sizes: sizeArr
                 },
-                //category: {
-                //    Id: temp.CategoryId,
-                //    categoryName: temp.CategoryTitle
-                //},
+                category: {
+                    Id: temp.CategoryId,
+                    categoryName: temp.CategoryTitle
+                },
                 sku: sku
             });
             res.json({"code": 200, "data": list});
@@ -267,9 +267,9 @@ function editGoodsGroup(req, res) {
             mysql_db.query.sync(
                 mysql_db,
                 'UPDATE bbx_goodsgroup SET GoodsGroupTitle=?,GoodsGroupSubTitle=?,GoodsDetail=?,GoodsImgPath=?,GoodsPrice=?,' +
-                'Outeriid=?,Tag=?,State=?,UpdateTime=now(),GoodsSaleState=?  WHERE Id=?',
+                'CategoryId=?,Outeriid=?,Tag=?,State=?,UpdateTime=now(),GoodsSaleState=?  WHERE Id=?',
                 [group.goodsGroupTitle, group.goodsGroupTitle, group.goodsDetail, group.imgPaths[0],
-                    group.price, group.outerId, group.tag, group.State,group.saleState, groupId]
+                    group.price, group.category.Id,  group.outerId, group.tag, group.State,group.saleState, groupId]
             );
 
             //获取商品的库存信息
@@ -422,10 +422,10 @@ function _addGoodsGroup(group) {
         var insert_result = mysql_db.query.sync(
             mysql_db,
             'insert into bbx_goodsgroup (Id,GoodsGroupTitle,GoodsGroupSubTitle,GoodsDetail,CreateTime,GoodsImgPath,GoodsPrice,' +
-            'Outeriid,Tag,GoodsSaleState,UpdateTime) values(?,?,?,?,now(),?,?,?,?,?,?,now())',
+            'CategoryId,Outeriid,Tag,GoodsSaleState,UpdateTime) values(?,?,?,?,now(),?,?,?,?,?,?,now())',
             [groupId, group.goodsGroupTitle, group.goodsGroupTitle,
                 group.goodsDetail,  group.imgPaths[0],
-                group.price,group.outerId, group.tag,group.saleState ]
+                group.price, group.category.Id,group.outerId, group.tag,group.saleState ]
         );
 
         console.log('insert_result*********');
@@ -754,7 +754,7 @@ function editGoodsCountView(req, res) {
  */
 function detailInfo(goodsGroupId, last_result) {
     try {
-        var sql = 'SELECT * from commodity WHERE  commodityid=?';
+        var sql = 'SELECT * from bbx_view_goods_list WHERE GoodsGroupId=?';
         var result = mysql_db.query.sync(mysql_db, sql, [goodsGroupId])[0];
         var sql2 = 'SELECT GoodsImgPath from bbx_goodsimages WHERE GoodsId=?';
         var imgsPath = mysql_db.query.sync(mysql_db, sql2, [goodsGroupId])[0];
@@ -853,7 +853,7 @@ function resetGoodsSaleState(req, res) {
 
 exports.getGoodsColors = getGoodsColors;
 exports.getGoodsSize = getGoodsSize;
-//exports.getGoodsCategory = getGoodsCategory;
+exports.getGoodsCategory = getGoodsCategory;
 exports.getGoodsGroups = getGoodsGroups;
 exports.getGoodsGroupInfo = getGoodsGroupInfo;
 exports.createGoodsGroup = createGoodsGroup;
